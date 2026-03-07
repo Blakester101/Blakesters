@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blakesters AI Marketplace</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="brand">Blakesters AI Marketplace</div>
+      <nav>
+        <button class="nav-link" data-page="welcome">Welcome</button>
+        <button class="nav-link" data-page="shop">Shop</button>
+        <button class="nav-link" data-page="news">News</button>
+        <button class="nav-link" data-page="help">Help AI</button>
+        <button class="nav-link" data-page="account">Account</button>
+        <button class="nav-link" data-page="games">Games</button>
+        <button class="nav-link" data-page="inventory">Inventory</button>
+      </nav>
+      <div class="cart-pill" id="cartCounter">Cart: 0</div>
+    </header>
+
+    <main>
+      <section id="welcome" class="page active">
+        <h1>Welcome</h1>
+        <p>
+          Sign in or continue as a guest account. Guest browsing supports one-time purchases
+          without saving details.
+        </p>
+        <div class="row">
+          <input id="email" type="email" placeholder="Email" />
+          <input id="password" type="password" placeholder="Password" />
+          <button id="signInBtn">Sign In</button>
+          <button id="guestBtn" class="ghost">Use Guest Account</button>
+        </div>
+        <p id="authStatus" class="small"></p>
+        <h3>Six quick ways to switch pages (same tab)</h3>
+        <div class="grid six-grid">
+          <button class="tile-link" data-page="shop">1. Online Shop</button>
+          <button class="tile-link" data-page="news">2. AI News Hub</button>
+          <button class="tile-link" data-page="help">3. Help Menu</button>
+          <button class="tile-link" data-page="account">4. Account</button>
+          <button class="tile-link" data-page="games">5. Games</button>
+          <button class="tile-link" data-page="inventory">6. Inventory</button>
+        </div>
+      </section>
+
+      <section id="shop" class="page">
+        <h1>Online Shop</h1>
+        <p>
+          Sellers can list products and set a listing price. Revenue split: Seller 90%, Platform
+          Profit 5%, Website Fee 5%.
+        </p>
+        <div class="card">
+          <h3>Upload your own item</h3>
+          <div class="row wrap">
+            <input id="listingName" placeholder="Item name" />
+            <input id="listingPrice" type="number" min="1" placeholder="Listing price ($)" />
+            <button id="addListingBtn">Add Listing</button>
+          </div>
+        </div>
+
+        <div id="productGrid" class="grid product-grid"></div>
+
+        <div class="payment-panel">
+          <h3>Cart & Payment</h3>
+          <div class="cart-top-left">
+            <strong>View cart (top left counter): </strong><span id="cartItems">No items yet.</span>
+          </div>
+          <div class="bottom-center">
+            <button id="goPaymentBtn">Go to Payment</button>
+          </div>
+          <div id="paymentBox" class="hidden">
+            <label><input id="donation" type="number" min="0" placeholder="Donate / Tip amount" /></label>
+            <label><input id="premiumPack" type="checkbox" /> Premium safe packaging (+$8, slower by 1 day)</label>
+            <label><input id="premiumSpeed" type="checkbox" /> Premium speed dispatch (&lt; 1 hour, +$15)</label>
+            <div class="row wrap">
+              <input id="card" placeholder="Card details" />
+              <button class="ghost">Apple Pay</button>
+              <button class="ghost">E-Wallet</button>
+              <button id="checkoutBtn">Checkout</button>
+            </div>
+            <p id="checkoutStatus" class="small"></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>AI-Managed Marketplace Operations</h3>
+          <p>
+            AI may detect discounted demand products and bulk-buy inventory, then relist with AI-led
+            advertising and marketing campaigns focused on profitability.
+          </p>
+          <h4>80% Refund Rule</h4>
+          <ul>
+            <li>Funds are held for 1 week before seller payout.</li>
+            <li>Faulty / not-as-described: full refund + 1% apology credit (with proof).</li>
+            <li>Change-of-mind (AI approved): 40% instant + 40% after return; platform keeps 20% courier cost.</li>
+          </ul>
+          <h4>Automated Emails Triggered at Payment</h4>
+          <ul>
+            <li>Customer email: delivery started, purchase details, account details, returns address, complaint/feedback email, amount spent.</li>
+            <li>Warehouse email: product, address, amount paid, premium packaging/speed flags.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="news" class="page">
+        <h1>AI News Articles</h1>
+        <p>AI-written news based on trending online events. Opens in a new tab.</p>
+        <div class="grid">
+          <a target="_blank" rel="noopener" href="https://www.abc.net.au/news" class="news-link">Market shifts in retail logistics</a>
+          <a target="_blank" rel="noopener" href="https://www.smh.com.au" class="news-link">AI marketing campaigns drive conversion</a>
+          <a target="_blank" rel="noopener" href="https://www.theguardian.com/au" class="news-link">Consumer confidence and online demand</a>
+          <a target="_blank" rel="noopener" href="https://www.afr.com" class="news-link">Small sellers scale through platform tools</a>
+        </div>
+      </section>
+
+      <section id="help" class="page">
+        <h1>Help Menu (AI Assistant)</h1>
+        <ol>
+          <li>Obey all Australian and NSW customer + consumer laws.</li>
+          <li>Target ~$2000/day in adaptive, ethical profit optimisation.</li>
+          <li>Understand customer issues and log them into an owner-accessible document.</li>
+        </ol>
+        <div class="card">
+          <div class="row wrap">
+            <input id="helpInput" placeholder="Ask the AI helper..." />
+            <button id="helpSend">Send</button>
+          </div>
+          <p id="helpOutput" class="small"></p>
+        </div>
+      </section>
+
+      <section id="account" class="page">
+        <h1>Account Management</h1>
+        <p>Only first name is requested. Other details are optional.</p>
+        <div class="grid two-col">
+          <input id="firstName" placeholder="First name (requested)" />
+          <input id="fullName" placeholder="Full name (optional)" />
+          <input id="gender" placeholder="Gender (optional)" />
+          <input id="address" placeholder="Saved address (optional)" />
+          <input id="cardSaved" placeholder="Saved card (optional)" />
+        </div>
+        <label><input id="saveDetails" type="checkbox" /> Save my details</label>
+        <div class="row">
+          <button id="saveAccountBtn">Save / Update</button>
+          <button id="clearAccountBtn" class="ghost">Delete saved details</button>
+          <button id="signOutBtn" class="ghost">Sign out</button>
+          <button id="deleteAccountBtn" class="danger">Delete account</button>
+        </div>
+        <p id="accountStatus" class="small"></p>
+      </section>
+
+      <section id="games" class="page">
+        <h1>Games</h1>
+        <div class="grid">
+          <a class="news-link" href="https://www.google.com/fbx?fbx=snake_arcade" target="_blank" rel="noopener">Google Snake</a>
+          <a class="news-link" href="https://www.google.com/search?q=pacman" target="_blank" rel="noopener">Pacman</a>
+          <a class="news-link" href="https://www.crazygames.com/game/awesome-tanks" target="_blank" rel="noopener">Awesome Tanks 1</a>
+          <a class="news-link" href="https://www.crazygames.com/game/awesome-tanks-2" target="_blank" rel="noopener">Awesome Tanks 2</a>
+          <a class="news-link" href="https://play2048.co/" target="_blank" rel="noopener">2048</a>
+        </div>
+
+        <div class="card">
+          <h3>5000 (2048 Variant)</h3>
+          <p>
+            Every click adds a random number. Any numbers can combine by simple addition. Avoid 13,
+            67, and 3333 — they reset progress.
+          </p>
+          <div class="row">
+            <button id="addNumberBtn">Generate Number</button>
+            <button id="combineBtn">Combine Last 2</button>
+            <button id="reset5000" class="ghost">Reset</button>
+          </div>
+          <p id="game5000State" class="small"></p>
+        </div>
+
+        <div class="card">
+          <h3>City Builder + Paid Boosts</h3>
+          <p>
+            In-game boosts can be purchased after AI approval. Prices can adapt for popular boosts.
+            Every price change sends owner email alert: blakester203@gmail.com.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Post a game (signed-in users)</h3>
+          <div class="row wrap">
+            <input id="gameTitle" placeholder="Game title" />
+            <input id="gameDesc" placeholder="Game description" />
+            <input id="gamePayments" placeholder="Contains paid content? (yes/no)" />
+            <button id="postGameBtn">Post game</button>
+          </div>
+          <p id="gamePostStatus" class="small"></p>
+        </div>
+      </section>
+
+      <section id="inventory" class="page">
+        <h1>Inventory Control</h1>
+        <p>
+          Store quantities and AI-uploaded items are updated every 15 minutes based on purchases and
+          market uploads.
+        </p>
+        <div class="row">
+          <button id="refreshInventory">Refresh Now</button>
+          <span class="small" id="inventoryUpdated"></span>
+        </div>
+        <div id="inventoryList" class="grid"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
