@@ -1,0 +1,155 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f3f6fb;
+  color: #1f2937;
+}
+
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #111827;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.nav-link,
+button {
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+}
+
+button.ghost {
+  background: #475569;
+}
+
+button.danger {
+  background: #b91c1c;
+}
+
+.cart-pill {
+  margin-left: auto;
+  background: #0ea5e9;
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+}
+
+main {
+  padding: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.two-col {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.six-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.product-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-block: 1rem;
+}
+
+.card,
+.product {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.45rem;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.tile-link {
+  width: 100%;
+  text-align: left;
+  background: #0f766e;
+}
+
+.add-to-cart {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.payment-panel {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.bottom-center {
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.news-link {
+  color: #0f172a;
+  background: #dbeafe;
+  text-decoration: none;
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+}
