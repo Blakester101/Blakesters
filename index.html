@@ -176,19 +176,20 @@
           <p id="game5000State" class="small"></p>
         </div>
 
-        <div class="card">
-          <h3>City Life Simulator (Browser Playable)</h3>
+        <div class="card city-game-card">
+          <h3>City Life Simulator — Full Browser Game (Safari-First)</h3>
           <p>
-            Build and live in your own city with zero rules. Pick your mode, timeline, and start
-            location, then drive your own story.
+            Three modes, persistent save, dynamic events, economy loops, and personal life choices —
+            all playable directly in-browser.
           </p>
+
           <div class="grid two-col">
             <label>
               Mode
               <select id="cityMode">
-                <option value="builder">Mode 1: City Builder</option>
-                <option value="citizen">Mode 2: Citizen Life (Random City)</option>
-                <option value="realworld">Mode 3: Real-World Start (Sydney / New York / Beijing)</option>
+                <option value="builder">Mode 1: City Builder (start with land + $100M)</option>
+                <option value="citizen">Mode 2: Citizen Life (random city)</option>
+                <option value="realworld">Mode 3: Real-World Start (Sydney/New York/Beijing)</option>
               </select>
             </label>
             <label>
@@ -209,14 +210,35 @@
               </select>
             </label>
           </div>
+
           <div class="row wrap">
             <button id="startCityRunBtn">Start New Run</button>
-            <button id="buildRoadBtn" class="ghost">Build Transport (+$2M income)</button>
-            <button id="buildWaterBtn" class="ghost">Build Water Grid (+$1.5M income)</button>
-            <button id="collectTaxBtn" class="ghost">Collect Tax / Fare</button>
-            <button id="takeLoanBtn" class="ghost">Take Bank Loan (+$20M)</button>
-            <button id="liveDayBtn" class="ghost">Live 1 Day</button>
+            <button id="saveCityBtn" class="ghost">Save Run</button>
+            <button id="loadCityBtn" class="ghost">Load Saved Run</button>
+            <button id="resetCityBtn" class="danger">Hard Reset</button>
           </div>
+
+          <div id="cityStats" class="grid city-stats"></div>
+
+          <div class="row wrap">
+            <button id="buildRoadBtn" class="ghost">Build Public Transport</button>
+            <button id="buildWaterBtn" class="ghost">Expand Water Grid</button>
+            <button id="buildPowerBtn" class="ghost">Expand Power Grid</button>
+            <button id="buildHousingBtn" class="ghost">Build Housing</button>
+            <button id="buildParksBtn" class="ghost">Build Parks</button>
+            <button id="raiseTaxBtn" class="ghost">Raise Taxes</button>
+            <button id="lowerTaxBtn" class="ghost">Lower Taxes</button>
+            <button id="takeLoanBtn" class="ghost">Take Bank Loan (+$20M)</button>
+            <button id="repayLoanBtn" class="ghost">Repay Loan (-$10M)</button>
+            <button id="collectTaxBtn" class="ghost">Collect Tax / Fare</button>
+            <button id="workJobBtn" class="ghost">Work Shift (citizen)</button>
+            <button id="socializeBtn" class="ghost">Socialize (citizen)</button>
+            <button id="liveDayBtn" class="ghost">Advance 1 Day</button>
+            <button id="liveWeekBtn" class="ghost">Advance 1 Week</button>
+          </div>
+
+          <h4>Objectives</h4>
+          <ul id="cityObjectives" class="small"></ul>
           <p id="cityRunSummary" class="small"></p>
           <p id="cityRunLog" class="small"></p>
         </div>
