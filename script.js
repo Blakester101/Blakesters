@@ -238,7 +238,8 @@ function generateObjectives(mode) {
   const common = [
     { id: 'obj-money', text: 'Reach $150M city balance', done: false },
     { id: 'obj-pop', text: 'Reach 500,000 population', done: false },
-    { id: 'obj-happy', text: 'Maintain 70+ happiness', done: false }
+    { id: 'obj-happy', text: 'Maintain 70+ happiness', done: false },
+    { id: 'obj-mobility', text: 'Build 12+ roads and 5+ transport level', done: false }
   ];
   if (mode === 'citizen') {
     common.push({ id: 'obj-cash', text: 'Earn $250,000 personal cash', done: false });
@@ -267,11 +268,24 @@ function createRun() {
     taxRate: 12,
     population: builderStart ? 5000 : 15000,
     happiness: builderStart ? 60 : 55,
+    roads: builderStart ? 2 : 6,
+    tunnels: 0,
+    bridges: 0,
+    stopSigns: builderStart ? 6 : 20,
+    trafficLights: builderStart ? 2 : 10,
+    cars: builderStart ? 1200 : 7000,
     transport: builderStart ? 1 : 2,
     water: builderStart ? 1 : 2,
     power: builderStart ? 1 : 2,
     housing: builderStart ? 1 : 3,
+    highRises: 0,
+    offices: builderStart ? 0 : 1,
+    commercialLow: builderStart ? 1 : 2,
+    commercialHigh: 0,
+    stadiums: 0,
     parks: 0,
+    playgrounds: 0,
+    amusementParks: 0,
     jobs: builderStart ? 2000 : 6000,
     dailyIncome: builderStart ? 0.8 : 0.3,
     personalCash: mode === 'citizen' ? 0.02 : 0,
@@ -288,6 +302,7 @@ function refreshObjectives() {
     if (o.id === 'obj-money') o.done = cityRun.balance >= 150;
     if (o.id === 'obj-pop') o.done = cityRun.population >= 500000;
     if (o.id === 'obj-happy') o.done = cityRun.happiness >= 70;
+    if (o.id === 'obj-mobility') o.done = cityRun.roads >= 12 && cityRun.transport >= 5;
     if (o.id === 'obj-cash') o.done = cityRun.personalCash >= 0.25;
     return o;
   });
@@ -330,11 +345,24 @@ function renderCityRun() {
     ['Population', cityRun.population.toLocaleString()],
     ['Happiness', `${cityRun.happiness.toFixed(0)}%`],
     ['Tax Rate', `${cityRun.taxRate}%`],
+    ['Cars', cityRun.cars.toLocaleString()],
+    ['Roads', cityRun.roads],
+    ['Tunnels', cityRun.tunnels],
+    ['Bridges', cityRun.bridges],
+    ['Stop Signs', cityRun.stopSigns],
+    ['Traffic Lights', cityRun.trafficLights],
     ['Transport', cityRun.transport],
     ['Water', cityRun.water],
     ['Power', cityRun.power],
     ['Housing', cityRun.housing],
+    ['High-Rises', cityRun.highRises],
+    ['Offices', cityRun.offices],
+    ['Commercial Low', cityRun.commercialLow],
+    ['Commercial High', cityRun.commercialHigh],
+    ['Stadiums', cityRun.stadiums],
     ['Parks', cityRun.parks],
+    ['Playgrounds', cityRun.playgrounds],
+    ['Amusement Parks', cityRun.amusementParks],
     ['Jobs', cityRun.jobs.toLocaleString()],
     ['Personal Cash', `$${(cityRun.personalCash * 1000000).toFixed(0)}`]
   ];
@@ -370,22 +398,24 @@ function macroUpdate(days = 1) {
   if (!cityRun) return;
 
   for (let i = 0; i < days; i += 1) {
-    const serviceScore = (cityRun.transport + cityRun.water + cityRun.power + cityRun.housing + cityRun.parks) / 5;
+    const serviceScore = (cityRun.transport + cityRun.water + cityRun.power + cityRun.housing + cityRun.parks + cityRun.playgrounds + cityRun.offices + cityRun.commercialLow + cityRun.commercialHigh) / 9;
     const taxPressure = (cityRun.taxRate - 10) * 0.6;
-    const growth = serviceScore * 120 - taxPressure * 20 + (Math.random() * 140 - 70);
+    const trafficCapacity = cityRun.roads * 2200 + cityRun.trafficLights * 350 + cityRun.stopSigns * 120 + cityRun.tunnels * 2800 + cityRun.bridges * 2400 + cityRun.transport * 3000;
+    const congestion = clamp((cityRun.cars - trafficCapacity) / 12000, -1, 2.5);
+    const growth = serviceScore * 120 - taxPressure * 20 - congestion * 90 + (Math.random() * 140 - 70);
 
     cityRun.population = Math.max(1000, Math.floor(cityRun.population + growth));
     cityRun.jobs = Math.max(500, Math.floor(cityRun.jobs + serviceScore * 80 - 30 + Math.random() * 60));
 
     const employmentRate = clamp(cityRun.jobs / cityRun.population, 0.3, 1);
     cityRun.happiness = clamp(
-      cityRun.happiness + (employmentRate - 0.7) * 4 + serviceScore * 0.8 - (cityRun.taxRate - 12) * 0.3 + (Math.random() * 2 - 1),
+      cityRun.happiness + (employmentRate - 0.7) * 4 + serviceScore * 0.8 - (cityRun.taxRate - 12) * 0.3 - congestion * 2.5 + (Math.random() * 2 - 1),
       5,
       95
     );
 
-    const cityRevenue = cityRun.population * (cityRun.taxRate / 100) * 0.00006 + serviceScore * 0.3;
-    const upkeep = (cityRun.transport + cityRun.water + cityRun.power + cityRun.housing + cityRun.parks) * 0.15;
+    const cityRevenue = cityRun.population * (cityRun.taxRate / 100) * 0.00006 + serviceScore * 0.3 + cityRun.offices * 0.15 + cityRun.commercialLow * 0.1 + cityRun.commercialHigh * 0.22 + cityRun.stadiums * 0.05 + cityRun.amusementParks * 0.08;
+    const upkeep = (cityRun.transport + cityRun.water + cityRun.power + cityRun.housing + cityRun.parks + cityRun.playgrounds + cityRun.roads + cityRun.bridges + cityRun.tunnels + cityRun.stadiums + cityRun.amusementParks) * 0.11;
     const debtCost = cityRun.debt * 0.004;
 
     cityRun.dailyIncome = Math.max(-4, cityRevenue - upkeep - debtCost);
@@ -453,10 +483,56 @@ document.getElementById('resetCityBtn').addEventListener('click', () => {
 });
 
 document.getElementById('buildRoadBtn').addEventListener('click', () => {
-  if (!spend(8, 'Not enough city funds for transport expansion.')) return;
+  if (!spend(3, 'Not enough city funds to build roads.')) return;
+  cityRun.roads += 1;
+  cityRun.lastEvent = 'Road network expanded. Cars and freight can move more efficiently.';
+  renderCityRun();
+});
+
+document.getElementById('buildTunnelBtn').addEventListener('click', () => {
+  if (!spend(9, 'Not enough city funds to build a tunnel.')) return;
+  cityRun.tunnels += 1;
+  cityRun.jobs += 700;
+  cityRun.lastEvent = 'New tunnel completed under a major corridor, reducing congestion.';
+  renderCityRun();
+});
+
+document.getElementById('buildBridgeBtn').addEventListener('click', () => {
+  if (!spend(10, 'Not enough city funds to build a bridge.')) return;
+  cityRun.bridges += 1;
+  cityRun.jobs += 850;
+  cityRun.lastEvent = 'Bridge opened and unlocked faster movement between districts.';
+  renderCityRun();
+});
+
+document.getElementById('addStopSignBtn').addEventListener('click', () => {
+  if (!spend(1, 'Not enough city funds for stop signs.')) return;
+  cityRun.stopSigns += 8;
+  cityRun.happiness = clamp(cityRun.happiness + 0.6, 5, 95);
+  cityRun.lastEvent = 'Stop signs installed across neighbourhood intersections.';
+  renderCityRun();
+});
+
+document.getElementById('addTrafficLightBtn').addEventListener('click', () => {
+  if (!spend(2, 'Not enough city funds for traffic lights.')) return;
+  cityRun.trafficLights += 4;
+  cityRun.happiness = clamp(cityRun.happiness + 0.8, 5, 95);
+  cityRun.lastEvent = 'Traffic lights installed on busy junctions to improve flow and safety.';
+  renderCityRun();
+});
+
+document.getElementById('buildTransportBtn').addEventListener('click', () => {
+  if (!spend(8, 'Not enough city funds for public transport expansion.')) return;
   cityRun.transport += 1;
   cityRun.jobs += 1200;
-  cityRun.lastEvent = 'Public transport expanded: commute times dropped and jobs increased.';
+  cityRun.lastEvent = 'Public transport expanded with new routes and higher frequency.';
+  renderCityRun();
+});
+
+document.getElementById('buyCarsBtn').addEventListener('click', () => {
+  if (!requiresRun()) return;
+  cityRun.cars += Math.floor(cityRun.population * 0.03 + 500);
+  cityRun.lastEvent = 'Car ownership increased as households and businesses purchased vehicles.';
   renderCityRun();
 });
 
@@ -477,10 +553,44 @@ document.getElementById('buildPowerBtn').addEventListener('click', () => {
 });
 
 document.getElementById('buildHousingBtn').addEventListener('click', () => {
-  if (!spend(9, 'Not enough city funds for housing project.')) return;
+  if (!spend(6, 'Not enough city funds for low-density housing project.')) return;
   cityRun.housing += 1;
-  cityRun.population += 6000;
-  cityRun.lastEvent = 'Housing district built: population growth accelerated.';
+  cityRun.population += 4500;
+  cityRun.lastEvent = 'Low-density housing expanded with detached homes and local streets.';
+  renderCityRun();
+});
+
+document.getElementById('buildHighRiseBtn').addEventListener('click', () => {
+  if (!spend(12, 'Not enough city funds for high-rise development.')) return;
+  cityRun.highRises += 1;
+  cityRun.housing += 1;
+  cityRun.population += 11000;
+  cityRun.jobs += 2200;
+  cityRun.lastEvent = 'High-rise towers completed, adding major urban density.';
+  renderCityRun();
+});
+
+document.getElementById('buildOfficeBtn').addEventListener('click', () => {
+  if (!spend(9, 'Not enough city funds for office district expansion.')) return;
+  cityRun.offices += 1;
+  cityRun.jobs += 2600;
+  cityRun.lastEvent = 'Office towers added and white-collar employment rose.';
+  renderCityRun();
+});
+
+document.getElementById('zoneCommercialLowBtn').addEventListener('click', () => {
+  if (!spend(5, 'Not enough city funds to zone low-density commercial.')) return;
+  cityRun.commercialLow += 1;
+  cityRun.jobs += 950;
+  cityRun.lastEvent = 'Low-density commercial zone approved for strip retail and local services.';
+  renderCityRun();
+});
+
+document.getElementById('zoneCommercialHighBtn').addEventListener('click', () => {
+  if (!spend(8, 'Not enough city funds to zone high-density commercial.')) return;
+  cityRun.commercialHigh += 1;
+  cityRun.jobs += 1800;
+  cityRun.lastEvent = 'High-density commercial district approved for malls and mixed-use blocks.';
   renderCityRun();
 });
 
@@ -488,7 +598,32 @@ document.getElementById('buildParksBtn').addEventListener('click', () => {
   if (!spend(4, 'Not enough city funds for parks investment.')) return;
   cityRun.parks += 1;
   cityRun.happiness = clamp(cityRun.happiness + 5, 5, 95);
-  cityRun.lastEvent = 'Park and recreation zones opened: city wellbeing improved.';
+  cityRun.lastEvent = 'Parkland expanded and quality of life improved.';
+  renderCityRun();
+});
+
+document.getElementById('buildPlaygroundBtn').addEventListener('click', () => {
+  if (!spend(3, 'Not enough city funds for playgrounds.')) return;
+  cityRun.playgrounds += 1;
+  cityRun.happiness = clamp(cityRun.happiness + 3, 5, 95);
+  cityRun.lastEvent = 'New playgrounds opened for families in residential suburbs.';
+  renderCityRun();
+});
+
+document.getElementById('buildAmusementBtn').addEventListener('click', () => {
+  if (!spend(11, 'Not enough city funds for an amusement park.')) return;
+  cityRun.amusementParks += 1;
+  cityRun.happiness = clamp(cityRun.happiness + 6, 5, 95);
+  cityRun.lastEvent = 'Amusement park opened and tourism traffic increased.';
+  renderCityRun();
+});
+
+document.getElementById('buildStadiumBtn').addEventListener('click', () => {
+  if (!spend(16, 'Not enough city funds for a football stadium.')) return;
+  cityRun.stadiums += 1;
+  cityRun.jobs += 1400;
+  cityRun.happiness = clamp(cityRun.happiness + 4, 5, 95);
+  cityRun.lastEvent = 'Football stadium completed; event economy and fan culture grew.';
   renderCityRun();
 });
 

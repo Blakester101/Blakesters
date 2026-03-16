@@ -180,6 +180,11 @@ label {
   margin: 0.75rem 0;
 }
 
+
+.city-action-grid button {
+  flex: 1 1 220px;
+}
+
 .stat-tile {
   background: #0f172a;
   color: #e2e8f0;
