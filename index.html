@@ -176,12 +176,84 @@
           <p id="game5000State" class="small"></p>
         </div>
 
-        <div class="card">
-          <h3>City Builder + Paid Boosts</h3>
+        <div class="card city-game-card">
+          <h3>City Life Simulator — Full Browser Game (Safari-First)</h3>
           <p>
-            In-game boosts can be purchased after AI approval. Prices can adapt for popular boosts.
-            Every price change sends owner email alert: blakester203@gmail.com.
+            Three modes, persistent save, dynamic events, economy loops, and personal life choices —
+            all playable directly in-browser.
           </p>
+
+          <div class="grid two-col">
+            <label>
+              Mode
+              <select id="cityMode">
+                <option value="builder">Mode 1: City Builder (start with land + $100M)</option>
+                <option value="citizen">Mode 2: Citizen Life (random city)</option>
+                <option value="realworld">Mode 3: Real-World Start (Sydney/New York/Beijing)</option>
+              </select>
+            </label>
+            <label>
+              Start Year
+              <input id="cityStartYear" type="number" min="1900" max="2200" value="2026" />
+            </label>
+            <label>
+              Start Age
+              <input id="cityStartAge" type="number" min="0" max="100" value="18" />
+            </label>
+            <label>
+              Start Location
+              <select id="cityStartLocation">
+                <option value="random">Random City</option>
+                <option value="Sydney">Sydney</option>
+                <option value="New York">New York</option>
+                <option value="Beijing">Beijing</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="row wrap">
+            <button id="startCityRunBtn">Start New Run</button>
+            <button id="saveCityBtn" class="ghost">Save Run</button>
+            <button id="loadCityBtn" class="ghost">Load Saved Run</button>
+            <button id="resetCityBtn" class="danger">Hard Reset</button>
+          </div>
+
+          <div id="cityStats" class="grid city-stats"></div>
+
+          <div class="row wrap city-action-grid">
+            <button id="buildRoadBtn" class="ghost">Build Roads</button>
+            <button id="buildTunnelBtn" class="ghost">Build Tunnel</button>
+            <button id="buildBridgeBtn" class="ghost">Build Bridge</button>
+            <button id="addStopSignBtn" class="ghost">Add Stop Signs</button>
+            <button id="addTrafficLightBtn" class="ghost">Add Traffic Lights</button>
+            <button id="buildTransportBtn" class="ghost">Expand Public Transport</button>
+            <button id="buyCarsBtn" class="ghost">Increase Car Ownership</button>
+            <button id="buildWaterBtn" class="ghost">Expand Water Grid</button>
+            <button id="buildPowerBtn" class="ghost">Expand Power Grid</button>
+            <button id="buildHousingBtn" class="ghost">Build Houses (Low Density)</button>
+            <button id="buildHighRiseBtn" class="ghost">Build High-Rises</button>
+            <button id="zoneCommercialLowBtn" class="ghost">Zone Low-Density Commercial</button>
+            <button id="zoneCommercialHighBtn" class="ghost">Zone High-Density Commercial</button>
+            <button id="buildOfficeBtn" class="ghost">Build Offices</button>
+            <button id="buildStadiumBtn" class="ghost">Build Football Stadium</button>
+            <button id="buildParksBtn" class="ghost">Build Parks</button>
+            <button id="buildPlaygroundBtn" class="ghost">Build Playgrounds</button>
+            <button id="buildAmusementBtn" class="ghost">Build Amusement Park</button>
+            <button id="raiseTaxBtn" class="ghost">Raise Taxes</button>
+            <button id="lowerTaxBtn" class="ghost">Lower Taxes</button>
+            <button id="takeLoanBtn" class="ghost">Take Bank Loan (+$20M)</button>
+            <button id="repayLoanBtn" class="ghost">Repay Loan (-$10M)</button>
+            <button id="collectTaxBtn" class="ghost">Collect Tax / Fare</button>
+            <button id="workJobBtn" class="ghost">Work Shift (citizen)</button>
+            <button id="socializeBtn" class="ghost">Socialize (citizen)</button>
+            <button id="liveDayBtn" class="ghost">Advance 1 Day</button>
+            <button id="liveWeekBtn" class="ghost">Advance 1 Week</button>
+          </div>
+
+          <h4>Objectives</h4>
+          <ul id="cityObjectives" class="small"></ul>
+          <p id="cityRunSummary" class="small"></p>
+          <p id="cityRunLog" class="small"></p>
         </div>
 
         <div class="card">
