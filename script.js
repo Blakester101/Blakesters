@@ -215,7 +215,129 @@ document.getElementById('postGameBtn').addEventListener('click', () => {
   document.getElementById('gamePostStatus').textContent = 'Game posted. Posting games does not generate seller payouts.';
 });
 
+// city life simulator
+let cityRun = null;
+
+function randomCityName() {
+  const names = ['Riverstone', 'Glasshaven', 'Eastford', 'Nova Ridge', 'Bluepoint', 'North Quay'];
+  return names[Math.floor(Math.random() * names.length)];
+}
+
+function renderCityRun() {
+  const summary = document.getElementById('cityRunSummary');
+  const log = document.getElementById('cityRunLog');
+
+  if (!cityRun) {
+    summary.textContent = 'Start a run to begin your city story.';
+    log.textContent = '';
+    return;
+  }
+
+  summary.textContent = `Mode: ${cityRun.modeLabel} | City: ${cityRun.city} | Year: ${cityRun.year} | Age: ${cityRun.age} | Balance: $${cityRun.balance.toFixed(1)}M | Daily income: $${cityRun.dailyIncome.toFixed(1)}M`;
+  log.textContent = cityRun.lastEvent;
+}
+
+function startCityRun() {
+  const mode = document.getElementById('cityMode').value;
+  const startYear = Number(document.getElementById('cityStartYear').value) || 2026;
+  const startAge = Number(document.getElementById('cityStartAge').value) || 18;
+  const selectedLocation = document.getElementById('cityStartLocation').value;
+
+  const modeLabel =
+    mode === 'builder'
+      ? 'City Builder'
+      : mode === 'citizen'
+        ? 'Citizen Life'
+        : 'Real-World Start';
+
+  const city =
+    mode === 'citizen' || selectedLocation === 'random' ? randomCityName() : selectedLocation;
+
+  cityRun = {
+    mode,
+    modeLabel,
+    year: startYear,
+    age: startAge,
+    city,
+    balance: mode === 'builder' ? 100 : 1,
+    dailyIncome: mode === 'builder' ? 0.5 : 0.1,
+    infrastructure: { transport: 0, water: 0 },
+    lastEvent:
+      mode === 'builder'
+        ? 'You received $100M and an empty plot of land. Build roads, utilities, and public transport to grow.'
+        : 'You spawned in a city with zero rules. Choose how you live and what you do next.'
+  };
+
+  renderCityRun();
+}
+
+function requiresRun() {
+  if (cityRun) return true;
+  document.getElementById('cityRunLog').textContent = 'Start a run first.';
+  return false;
+}
+
+document.getElementById('startCityRunBtn').addEventListener('click', startCityRun);
+
+document.getElementById('buildRoadBtn').addEventListener('click', () => {
+  if (!requiresRun()) return;
+  if (cityRun.balance < 8) {
+    cityRun.lastEvent = 'Not enough money to build transport. Try taxes/fares or a bank loan.';
+    renderCityRun();
+    return;
+  }
+  cityRun.balance -= 8;
+  cityRun.dailyIncome += 2;
+  cityRun.infrastructure.transport += 1;
+  cityRun.lastEvent = `Transport network level ${cityRun.infrastructure.transport} built. Revenue potential increased.`;
+  renderCityRun();
+});
+
+document.getElementById('buildWaterBtn').addEventListener('click', () => {
+  if (!requiresRun()) return;
+  if (cityRun.balance < 5) {
+    cityRun.lastEvent = 'Not enough money to build water grid. Generate more cash first.';
+    renderCityRun();
+    return;
+  }
+  cityRun.balance -= 5;
+  cityRun.dailyIncome += 1.5;
+  cityRun.infrastructure.water += 1;
+  cityRun.lastEvent = `Water grid level ${cityRun.infrastructure.water} online. City health and growth improved.`;
+  renderCityRun();
+});
+
+document.getElementById('collectTaxBtn').addEventListener('click', () => {
+  if (!requiresRun()) return;
+  const collected = Math.max(0.1, cityRun.dailyIncome * (0.7 + Math.random() * 0.8));
+  cityRun.balance += collected;
+  cityRun.lastEvent = `Collected $${collected.toFixed(1)}M from taxes/fares and city services.`;
+  renderCityRun();
+});
+
+document.getElementById('takeLoanBtn').addEventListener('click', () => {
+  if (!requiresRun()) return;
+  cityRun.balance += 20;
+  cityRun.dailyIncome = Math.max(0.1, cityRun.dailyIncome - 0.4);
+  cityRun.lastEvent = 'Bank loan approved for $20M. Debt repayments reduced passive income slightly.';
+  renderCityRun();
+});
+
+document.getElementById('liveDayBtn').addEventListener('click', () => {
+  if (!requiresRun()) return;
+  const shift = (Math.random() * 2 - 1) * 0.8;
+  cityRun.balance = Math.max(0, cityRun.balance + cityRun.dailyIncome + shift);
+  cityRun.age += 1 / 365;
+  if (Math.random() > 0.9) cityRun.year += 1;
+  cityRun.lastEvent =
+    cityRun.mode === 'builder'
+      ? 'A day passed: contracts, maintenance, and service demand changed your city economy.'
+      : 'A day passed: you explored the city, met people, and made your own choices.';
+  renderCityRun();
+});
+
 renderProducts();
 renderInventory();
 updateCartUI();
 render5000();
+renderCityRun();
