@@ -168,43 +168,150 @@ if (saved) {
   document.getElementById('saveDetails').checked = true;
 }
 
-// 5000 game
-let stack5000 = [];
-function render5000() {
-  document.getElementById('game5000State').textContent = stack5000.length
-    ? `Numbers: ${stack5000.join(', ')} | Total: ${stack5000.reduce((a, n) => a + n, 0)}`
-    : 'No numbers yet.';
+// living city game
+let cityGame = {
+  mode: 'builder',
+  day: 0,
+  age: 18,
+  cityName: '',
+  location: 'Unknown',
+  money: 0,
+  loan: 0,
+  transport: 0,
+  water: 0,
+  population: 0,
+  log: []
+};
+
+function randomCityName() {
+  const a = ['North', 'New', 'Lake', 'Iron', 'Green', 'River'];
+  const b = ['Haven', 'Point', 'View', 'City', 'Heights', 'Cross'];
+  return `${a[Math.floor(Math.random() * a.length)]} ${b[Math.floor(Math.random() * b.length)]}`;
 }
 
-function reset5000(reason = 'Reset.') {
-  stack5000 = [];
-  document.getElementById('game5000State').textContent = reason;
+function pushCityLog(entry) {
+  cityGame.log.unshift(`Day ${cityGame.day}: ${entry}`);
+  cityGame.log = cityGame.log.slice(0, 20);
 }
 
-document.getElementById('addNumberBtn').addEventListener('click', () => {
-  const n = Math.floor(Math.random() * 150) + 1;
-  if ([13, 67, 3333].includes(n)) {
-    reset5000(`Bad number ${n}. Progress reset.`);
+function renderCityGame() {
+  document.getElementById('cityStatus').textContent =
+    cityGame.day === 0 ? 'Start a mode to begin.' : `Running: ${cityGame.mode} mode.`;
+  document.getElementById('economySummary').textContent =
+    `Money: $${cityGame.money.toLocaleString()} | Loan: $${cityGame.loan.toLocaleString()} | Tax/Fares Quality: ${Math.min(100, 30 + cityGame.transport * 8 + cityGame.water * 6)}%`;
+  document.getElementById('citySummary').textContent =
+    `${cityGame.cityName} | Age: ${cityGame.age} | Start: ${cityGame.location} | Population: ${cityGame.population.toLocaleString()} | Transport Lines: ${cityGame.transport} | Water Grid Zones: ${cityGame.water}`;
+  document.getElementById('cityLog').innerHTML = cityGame.log.length
+    ? cityGame.log.map((item) => `<div>• ${item}</div>`).join('')
+    : 'No activity yet.';
+}
+
+function startCityMode() {
+  const mode = document.getElementById('cityMode').value;
+  const startAge = Number(document.getElementById('startAge').value || 18);
+  const realCity = document.getElementById('realCity').value;
+  const startLocation = document.getElementById('startLocation').value.trim() || 'City Center';
+  const randomCity = randomCityName();
+
+  cityGame = {
+    mode,
+    day: 1,
+    age: startAge,
+    cityName: mode === 'real' ? realCity : randomCity,
+    location: startLocation,
+    money: mode === 'builder' ? 100000000 : 7500,
+    loan: 0,
+    transport: 0,
+    water: 0,
+    population: mode === 'builder' ? 5000 : Math.floor(Math.random() * 300000) + 40000,
+    log: []
+  };
+
+  if (mode === 'builder') {
+    pushCityLog('You received an empty plot of land and a $100,000,000 budget.');
+  } else if (mode === 'life') {
+    pushCityLog(`You started life in randomly generated ${cityGame.cityName} at age ${cityGame.age}.`);
+  } else {
+    pushCityLog(`You started in ${cityGame.cityName} at age ${cityGame.age}. No rules, live how you want.`);
+  }
+
+  renderCityGame();
+}
+
+function advanceDay() {
+  if (cityGame.day === 0) {
+    document.getElementById('cityStatus').textContent = 'Start a mode first.';
     return;
   }
-  stack5000.push(n);
-  render5000();
-});
 
-document.getElementById('combineBtn').addEventListener('click', () => {
-  if (stack5000.length < 2) return;
-  const a = stack5000.pop();
-  const b = stack5000.pop();
-  const c = a + b;
-  if ([13, 67, 3333].includes(c)) {
-    reset5000(`Combined into ${c}. Progress reset.`);
+  cityGame.day += 1;
+  if (cityGame.mode === 'builder') {
+    const dailyTax = Math.floor(cityGame.population * (2 + cityGame.water * 0.25));
+    const fareRevenue = cityGame.transport * 35000;
+    const loanCost = Math.floor(cityGame.loan * 0.0005);
+    cityGame.money += dailyTax + fareRevenue - loanCost;
+    cityGame.population += Math.floor(Math.random() * 1200);
+    pushCityLog(`Collected $${(dailyTax + fareRevenue).toLocaleString()} from tax/fares and paid $${loanCost.toLocaleString()} loan interest.`);
+  } else {
+    const eventPool = [
+      'You explored a new neighborhood.',
+      'You took a casual job and earned $120.',
+      'You met new friends at a local event.',
+      'You spent the day learning city transport routes.',
+      'You rented a better apartment for comfort.'
+    ];
+    const event = eventPool[Math.floor(Math.random() * eventPool.length)];
+    cityGame.money += Math.floor(Math.random() * 300) - 50;
+    cityGame.age += cityGame.day % 365 === 0 ? 1 : 0;
+    pushCityLog(event);
+  }
+
+  renderCityGame();
+}
+
+document.getElementById('startModeBtn').addEventListener('click', startCityMode);
+document.getElementById('tickDayBtn').addEventListener('click', advanceDay);
+
+document.getElementById('buildTransitBtn').addEventListener('click', () => {
+  if (cityGame.mode !== 'builder' || cityGame.day === 0) {
+    document.getElementById('cityStatus').textContent = 'Public transport can only be built in City Builder mode.';
     return;
   }
-  stack5000.push(c);
-  render5000();
+  if (cityGame.money < 12000000) {
+    document.getElementById('cityStatus').textContent = 'Not enough funds for transport build.';
+    return;
+  }
+  cityGame.money -= 12000000;
+  cityGame.transport += 1;
+  pushCityLog('Built a new public transport line for $12,000,000.');
+  renderCityGame();
 });
 
-document.getElementById('reset5000').addEventListener('click', () => reset5000('Game reset.'));
+document.getElementById('buildWaterBtn').addEventListener('click', () => {
+  if (cityGame.mode !== 'builder' || cityGame.day === 0) {
+    document.getElementById('cityStatus').textContent = 'Water grid upgrades can only be built in City Builder mode.';
+    return;
+  }
+  if (cityGame.money < 8000000) {
+    document.getElementById('cityStatus').textContent = 'Not enough funds for water grid build.';
+    return;
+  }
+  cityGame.money -= 8000000;
+  cityGame.water += 1;
+  pushCityLog('Expanded water grid for $8,000,000.');
+  renderCityGame();
+});
+
+document.getElementById('takeLoanBtn').addEventListener('click', () => {
+  if (cityGame.day === 0) {
+    document.getElementById('cityStatus').textContent = 'Start a mode before taking a loan.';
+    return;
+  }
+  cityGame.money += 25000000;
+  cityGame.loan += 25000000;
+  pushCityLog('Bank approved a $25,000,000 loan.');
+  renderCityGame();
+});
 
 // post game
 document.getElementById('postGameBtn').addEventListener('click', () => {
@@ -218,4 +325,4 @@ document.getElementById('postGameBtn').addEventListener('click', () => {
 renderProducts();
 renderInventory();
 updateCartUI();
-render5000();
+renderCityGame();

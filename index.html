@@ -153,35 +153,64 @@
       </section>
 
       <section id="games" class="page">
-        <h1>Games</h1>
-        <div class="grid">
-          <a class="news-link" href="https://www.google.com/fbx?fbx=snake_arcade" target="_blank" rel="noopener">Google Snake</a>
-          <a class="news-link" href="https://www.google.com/search?q=pacman" target="_blank" rel="noopener">Pacman</a>
-          <a class="news-link" href="https://www.crazygames.com/game/awesome-tanks" target="_blank" rel="noopener">Awesome Tanks 1</a>
-          <a class="news-link" href="https://www.crazygames.com/game/awesome-tanks-2" target="_blank" rel="noopener">Awesome Tanks 2</a>
-          <a class="news-link" href="https://play2048.co/" target="_blank" rel="noopener">2048</a>
-        </div>
+        <h1>Living City (Browser Prototype)</h1>
+        <p>
+          Choose one of three no-rules modes: build a city economy, live as a person in a random
+          city, or start in Sydney, New York, or Beijing with a custom age and start location.
+        </p>
 
         <div class="card">
-          <h3>5000 (2048 Variant)</h3>
-          <p>
-            Every click adds a random number. Any numbers can combine by simple addition. Avoid 13,
-            67, and 3333 — they reset progress.
-          </p>
-          <div class="row">
-            <button id="addNumberBtn">Generate Number</button>
-            <button id="combineBtn">Combine Last 2</button>
-            <button id="reset5000" class="ghost">Reset</button>
+          <h3>Start a mode</h3>
+          <div class="grid two-col">
+            <label>
+              Mode
+              <select id="cityMode">
+                <option value="builder">City Builder</option>
+                <option value="life">Life Sim (Random City)</option>
+                <option value="real">Real City Start</option>
+              </select>
+            </label>
+            <label>
+              Starting age
+              <input id="startAge" type="number" min="0" max="120" value="18" />
+            </label>
+            <label>
+              Real city (for Real City Start)
+              <select id="realCity">
+                <option>Sydney</option>
+                <option>New York</option>
+                <option>Beijing</option>
+              </select>
+            </label>
+            <label>
+              Start location
+              <input id="startLocation" placeholder="e.g. Downtown, Harbour, Suburbs" />
+            </label>
           </div>
-          <p id="game5000State" class="small"></p>
+          <div class="row wrap">
+            <button id="startModeBtn">Start / Restart Game</button>
+            <button id="tickDayBtn" class="ghost">Advance 1 Day</button>
+            <button id="buildTransitBtn">Build Public Transport ($12M)</button>
+            <button id="buildWaterBtn">Build Water Grid ($8M)</button>
+            <button id="takeLoanBtn" class="ghost">Take Bank Loan ($25M)</button>
+          </div>
+          <p id="cityStatus" class="small"></p>
+        </div>
+
+        <div class="grid two-col">
+          <div class="card">
+            <h3>Economy</h3>
+            <p id="economySummary" class="small"></p>
+          </div>
+          <div class="card">
+            <h3>City Snapshot</h3>
+            <p id="citySummary" class="small"></p>
+          </div>
         </div>
 
         <div class="card">
-          <h3>City Builder + Paid Boosts</h3>
-          <p>
-            In-game boosts can be purchased after AI approval. Prices can adapt for popular boosts.
-            Every price change sends owner email alert: blakester203@gmail.com.
-          </p>
+          <h3>Daily Activity Log</h3>
+          <div id="cityLog" class="small city-log"></div>
         </div>
 
         <div class="card">
