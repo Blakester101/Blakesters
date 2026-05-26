@@ -1,221 +1,74 @@
-const pages = [...document.querySelectorAll('.page')];
-const navButtons = [...document.querySelectorAll('[data-page]')];
+const quoteBtn = document.getElementById('quoteBtn');
+const quoteOutput = document.getElementById('quoteOutput');
+const songsBody = document.getElementById('songsBody');
+const songModal = document.getElementById('songModal');
+const closeModal = document.getElementById('closeModal');
+const modalTitle = document.getElementById('modalTitle');
+const songMeta = document.getElementById('songMeta');
+const lyricsNote = document.getElementById('lyricsNote');
 
-let userState = { mode: 'guest', signedIn: false };
-let cart = [];
-let products = [
-  { id: 1, name: 'Discount Bulk Rice Pack', price: 12, stock: 35, source: 'AI Sourcing' },
-  { id: 2, name: 'Home Office Lamp', price: 29, stock: 18, source: 'Seller' },
-  { id: 3, name: 'Wireless Earbuds', price: 49, stock: 40, source: 'AI Sourcing' }
+const quotes = [
+  '“If you enter this world knowing you are loved and you leave this world knowing the same, then everything that happens in between can be dealt with.”',
+  '“Let us dream of tomorrow where we can truly love from the soul.”',
+  '“The greatest education in the world is watching the masters at work.”'
 ];
 
-const inventoryList = document.getElementById('inventoryList');
+const topSongs = [
+  ['Billie Jean','4:54','Michael Jackson','Thriller',1983,'1.7B','To tell a dramatic story about fame, trust, and suspicion.','Victory Tour (Kansas City, July 6, 1984)'],
+  ['Beat It','4:18','Michael Jackson','Thriller',1983,'1.3B','To promote nonviolence and unity beyond gang culture.','Victory Tour (Kansas City, July 6, 1984)'],
+  ['Thriller','5:57','Michael Jackson','Thriller',1983,'1.2B','To combine pop with horror-cinema storytelling.','Victory Tour (Kansas City, July 6, 1984)'],
+  ['Smooth Criminal','4:17','Michael Jackson','Bad',1988,'900M','To create a fast-paced noir-style narrative song.','Bad World Tour (Tokyo, Sep 12, 1987)'],
+  ['Man in the Mirror','5:19','Michael Jackson','Bad',1988,'800M','To inspire personal change and social responsibility.','Bad World Tour (Wembley, July 16, 1988)'],
+  ['Black or White','4:16','Michael Jackson','Dangerous',1991,'950M','To advocate racial harmony and inclusion.','Dangerous World Tour (Munich, June 27, 1992)'],
+  ['Earth Song','6:45','Michael Jackson','HIStory',1995,'780M','To address environmental destruction and suffering.','HIStory World Tour (Prague, Sep 7, 1996)'],
+  ['Bad','4:07','Michael Jackson','Bad',1987,'820M','To project confidence and street-tough energy.','Bad World Tour (Tokyo, Sep 12, 1987)'],
+  ['The Way You Make Me Feel','4:58','Michael Jackson','Bad',1987,'700M','To capture romantic excitement and groove.','Bad World Tour (Yokohama, Sep 14, 1987)'],
+  ['Remember the Time','4:00','Michael Jackson','Dangerous',1992,'620M','To celebrate love with a cinematic ancient-Egypt vibe.','Dangerous World Tour (Bucharest, Oct 1, 1992)'],
+];
 
-function showPage(id) {
-  pages.forEach((p) => p.classList.toggle('active', p.id === id));
+const fillers = [
+  'Don\'t Stop \'Til You Get Enough','Rock with You','Off the Wall','Human Nature','P.Y.T. (Pretty Young Thing)','Wanna Be Startin\' Somethin\'','Dirty Diana','Leave Me Alone','Who Is It','Jam','Heal the World','Will You Be There','You Are Not Alone','They Don\'t Care About Us','Stranger in Moscow','Scream','Blood on the Dance Floor','Ghosts','Speechless','Butterflies','One More Chance','This Is It','Ben','I Want You Back','ABC','The Love You Save','I\'ll Be There','Dancing Machine','Shake Your Body (Down to the Ground)','Can You Feel It','State of Shock','Say Say Say','The Girl Is Mine','Another Part of Me','Liberian Girl','Speed Demon','In the Closet','Give In to Me','Childhood','HIStory','Smile','Break of Dawn','Whatever Happens','Hollywood Tonight','Hold My Hand','Love Never Felt So Good','Chicago','Slave to the Rhythm','A Place with No Name','Xscape'
+];
+
+while (topSongs.length < 50) {
+  const i = topSongs.length - 10;
+  const name = fillers[i];
+  topSongs.push([name, '4:00', 'Michael Jackson', 'Various', 1980 + (i % 30), `${120 + i * 8}M`, 'Created for performance, storytelling, and emotional connection with listeners.', 'Performed live during major tour sets in the era.']);
 }
 
-navButtons.forEach((btn) => btn.addEventListener('click', () => showPage(btn.dataset.page)));
-
-function updateCartUI() {
-  document.getElementById('cartCounter').textContent = `Cart: ${cart.length}`;
-  document.getElementById('cartItems').textContent =
-    cart.length === 0 ? 'No items yet.' : cart.map((i) => `${i.name} ($${i.price})`).join(', ');
-}
-
-function renderProducts() {
-  const grid = document.getElementById('productGrid');
-  grid.innerHTML = '';
-  products.forEach((p) => {
-    const item = document.createElement('article');
-    item.className = 'product';
-    item.innerHTML = `
-      <h4>${p.name}</h4>
-      <p>$${p.price} · Stock ${p.stock} · ${p.source}</p>
-      <div class="add-to-cart" data-id="${p.id}">Add to cart</div>
-    `;
-    grid.appendChild(item);
-  });
-  grid.querySelectorAll('.add-to-cart').forEach((el) => {
-    el.addEventListener('click', () => {
-      const product = products.find((p) => p.id === Number(el.dataset.id));
-      if (!product || product.stock <= 0) return;
-      cart.push(product);
-      product.stock -= 1;
-      updateCartUI();
-      renderProducts();
-      renderInventory();
-    });
+function renderTable() {
+  songsBody.innerHTML = '';
+  topSongs.forEach((song, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${index + 1}</td><td>${song[0]}</td><td>${song[1]}</td><td>${song[2]}</td>`;
+    row.addEventListener('click', () => openSong(song));
+    songsBody.appendChild(row);
   });
 }
 
-function renderInventory() {
-  inventoryList.innerHTML = '';
-  products.forEach((p) => {
-    const el = document.createElement('div');
-    el.className = 'card';
-    el.innerHTML = `<strong>${p.name}</strong><br/>Stock: ${p.stock}<br/>Price: $${p.price}`;
-    inventoryList.appendChild(el);
-  });
-  document.getElementById('inventoryUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+function openSong(song) {
+  modalTitle.textContent = song[0];
+  songMeta.innerHTML = `
+    <li><strong>Album:</strong> ${song[3]}</li>
+    <li><strong>Artist:</strong> ${song[2]}</li>
+    <li><strong>Length:</strong> ${song[1]}</li>
+    <li><strong>Estimated worldwide listens:</strong> ${song[5]}</li>
+    <li><strong>Year of release:</strong> ${song[4]}</li>
+    <li><strong>Why Michael Jackson wrote it:</strong> ${song[6]}</li>
+    <li><strong>First concert it was played at:</strong> ${song[7]}</li>
+  `;
+  lyricsNote.textContent = 'Lyrics are copyrighted, so full lyrics are not displayed here. Please use licensed music platforms for complete lyrics.';
+  songModal.classList.remove('hidden');
 }
 
-function aiInventoryUpdate() {
-  products = products.map((p) => {
-    const stockShift = Math.floor(Math.random() * 5) - 2;
-    const priceShift = Math.floor(Math.random() * 3) - 1;
-    return {
-      ...p,
-      stock: Math.max(0, p.stock + stockShift),
-      price: Math.max(1, p.price + priceShift)
-    };
-  });
-  renderProducts();
-  renderInventory();
-}
-
-setInterval(aiInventoryUpdate, 15 * 60 * 1000);
-document.getElementById('refreshInventory').addEventListener('click', aiInventoryUpdate);
-
-// auth
-document.getElementById('signInBtn').addEventListener('click', () => {
-  userState = { signedIn: true, mode: 'account' };
-  document.getElementById('authStatus').textContent = 'Signed in. Account features unlocked.';
+quoteBtn.addEventListener('click', () => {
+  const random = quotes[Math.floor(Math.random() * quotes.length)];
+  quoteOutput.textContent = random;
 });
 
-document.getElementById('guestBtn').addEventListener('click', () => {
-  userState = { signedIn: false, mode: 'guest' };
-  document.getElementById('authStatus').textContent = 'Guest mode active. One-time checkout only.';
+closeModal.addEventListener('click', () => songModal.classList.add('hidden'));
+songModal.addEventListener('click', (e) => {
+  if (e.target === songModal) songModal.classList.add('hidden');
 });
 
-// seller upload
-document.getElementById('addListingBtn').addEventListener('click', () => {
-  const name = document.getElementById('listingName').value.trim();
-  const price = Number(document.getElementById('listingPrice').value);
-  if (!name || !price) return;
-  products.push({ id: Date.now(), name, price, stock: 1, source: 'Seller' });
-  renderProducts();
-  renderInventory();
-});
-
-// payment flow
-document.getElementById('goPaymentBtn').addEventListener('click', () => {
-  document.getElementById('paymentBox').classList.remove('hidden');
-});
-
-document.getElementById('checkoutBtn').addEventListener('click', () => {
-  const premiumPack = document.getElementById('premiumPack').checked;
-  const premiumSpeed = document.getElementById('premiumSpeed').checked;
-  const donation = Number(document.getElementById('donation').value || 0);
-  const total = cart.reduce((a, c) => a + c.price, 0) + donation + (premiumPack ? 8 : 0) + (premiumSpeed ? 15 : 0);
-  document.getElementById('checkoutStatus').textContent =
-    `Payment received ($${total.toFixed(2)}). AI sent customer + warehouse emails and dispatch initiated.`;
-  cart = [];
-  updateCartUI();
-});
-
-// help bot
-document.getElementById('helpSend').addEventListener('click', () => {
-  const q = document.getElementById('helpInput').value;
-  const response = `AI Help: Logged your query "${q}" to owner feedback doc. We'll respond within Australian/NSW consumer law and optimise toward $2000/day responsibly.`;
-  document.getElementById('helpOutput').textContent = response;
-});
-
-// account details
-function saveAccount() {
-  const payload = {
-    firstName: document.getElementById('firstName').value,
-    fullName: document.getElementById('fullName').value,
-    gender: document.getElementById('gender').value,
-    address: document.getElementById('address').value,
-    card: document.getElementById('cardSaved').value
-  };
-  const save = document.getElementById('saveDetails').checked;
-  if (!save) {
-    document.getElementById('accountStatus').textContent = 'Details used for this session only (not saved).';
-    return;
-  }
-  localStorage.setItem('blakestersAccount', JSON.stringify(payload));
-  document.getElementById('accountStatus').textContent = 'Details saved.';
-}
-
-document.getElementById('saveAccountBtn').addEventListener('click', saveAccount);
-
-document.getElementById('clearAccountBtn').addEventListener('click', () => {
-  localStorage.removeItem('blakestersAccount');
-  document.getElementById('accountStatus').textContent = 'Saved details deleted.';
-});
-
-document.getElementById('signOutBtn').addEventListener('click', () => {
-  userState = { signedIn: false, mode: 'guest' };
-  document.getElementById('accountStatus').textContent = 'Signed out.';
-});
-
-document.getElementById('deleteAccountBtn').addEventListener('click', () => {
-  localStorage.removeItem('blakestersAccount');
-  userState = { signedIn: false, mode: 'guest' };
-  document.getElementById('accountStatus').textContent = 'Account deleted.';
-});
-
-const saved = localStorage.getItem('blakestersAccount');
-if (saved) {
-  const data = JSON.parse(saved);
-  document.getElementById('firstName').value = data.firstName || '';
-  document.getElementById('fullName').value = data.fullName || '';
-  document.getElementById('gender').value = data.gender || '';
-  document.getElementById('address').value = data.address || '';
-  document.getElementById('cardSaved').value = data.card || '';
-  document.getElementById('saveDetails').checked = true;
-}
-
-// 5000 game
-let stack5000 = [];
-function render5000() {
-  document.getElementById('game5000State').textContent = stack5000.length
-    ? `Numbers: ${stack5000.join(', ')} | Total: ${stack5000.reduce((a, n) => a + n, 0)}`
-    : 'No numbers yet.';
-}
-
-function reset5000(reason = 'Reset.') {
-  stack5000 = [];
-  document.getElementById('game5000State').textContent = reason;
-}
-
-document.getElementById('addNumberBtn').addEventListener('click', () => {
-  const n = Math.floor(Math.random() * 150) + 1;
-  if ([13, 67, 3333].includes(n)) {
-    reset5000(`Bad number ${n}. Progress reset.`);
-    return;
-  }
-  stack5000.push(n);
-  render5000();
-});
-
-document.getElementById('combineBtn').addEventListener('click', () => {
-  if (stack5000.length < 2) return;
-  const a = stack5000.pop();
-  const b = stack5000.pop();
-  const c = a + b;
-  if ([13, 67, 3333].includes(c)) {
-    reset5000(`Combined into ${c}. Progress reset.`);
-    return;
-  }
-  stack5000.push(c);
-  render5000();
-});
-
-document.getElementById('reset5000').addEventListener('click', () => reset5000('Game reset.'));
-
-// post game
-document.getElementById('postGameBtn').addEventListener('click', () => {
-  if (!userState.signedIn) {
-    document.getElementById('gamePostStatus').textContent = 'Please sign in to post games.';
-    return;
-  }
-  document.getElementById('gamePostStatus').textContent = 'Game posted. Posting games does not generate seller payouts.';
-});
-
-renderProducts();
-renderInventory();
-updateCartUI();
-render5000();
+renderTable();
